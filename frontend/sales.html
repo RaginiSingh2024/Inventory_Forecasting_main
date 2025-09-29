@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales - Inventory Forecasting</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-page">
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-chart-line"></i>
+            <h2>Inventory Pro</h2>
+        </div>
+        
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="products.html"><i class="fas fa-box"></i> Products</a></li>
+            <li><a href="sales.html" class="active"><i class="fas fa-shopping-cart"></i> Sales</a></li>
+            <li><a href="forecast.html"><i class="fas fa-chart-bar"></i> Forecast</a></li>
+            <li><a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Sales Management</h1>
+            <button id="addSaleBtn" class="primary-btn">
+                <i class="fas fa-plus"></i> Record Sale
+            </button>
+        </header>
+
+        <div class="sales-summary">
+            <div class="summary-card">
+                <h3>Today's Sales</h3>
+                <p class="summary-value" id="todaySales">₹0.00</p>
+            </div>
+            <div class="summary-card">
+                <h3>This Week</h3>
+                <p class="summary-value" id="weekSales">₹0.00</p>
+            </div>
+            <div class="summary-card">
+                <h3>This Month</h3>
+                <p class="summary-value" id="monthSales">₹0.00</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Sales</h3>
+                <p class="summary-value" id="totalSalesValue">₹0.00</p>
+            </div>
+        </div>
+
+        <div class="sales-container">
+            <div class="sales-filters">
+                <input type="text" id="searchSales" placeholder="Search sales...">
+                <input type="date" id="dateFrom" title="From Date">
+                <input type="date" id="dateTo" title="To Date">
+                <select id="productFilter">
+                    <option value="">All Products</option>
+                </select>
+                <button id="clearFilters" class="secondary-btn">Clear Filters</button>
+            </div>
+
+            <div class="sales-table-container">
+                <table class="sales-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Product</th>
+                            <th>Quantity Sold</th>
+                            <th>Unit Price</th>
+                            <th>Total Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody">
+                        <!-- Sales will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Sale Modal -->
+    <div id="saleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Record Sale</h2>
+                <span class="close">&times;</span>
+            </div>
+            
+            <form id="saleForm" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="saleProduct">Product *</label>
+                        <select id="saleProduct" required>
+                            <option value="">Select Product</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="saleQuantity">Quantity *</label>
+                        <input type="number" id="saleQuantity" min="1" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="saleDate">Sale Date *</label>
+                        <input type="date" id="saleDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="unitPrice">Unit Price (₹)</label>
+                        <input type="number" id="unitPrice" step="0.01" min="0" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="totalAmount">Total Amount (₹)</label>
+                        <input type="number" id="totalAmount" step="0.01" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="availableStock">Available Stock</label>
+                        <input type="number" id="availableStock" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="saleNotes">Notes</label>
+                    <textarea id="saleNotes" rows="3" placeholder="Optional notes about this sale"></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="secondary-btn" id="cancelSaleBtn">Cancel</button>
+                    <button type="submit" class="primary-btn">Record Sale</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Sale Modal -->
+    <div id="deleteSaleModal" class="modal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <span class="close">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <p>Are you sure you want to delete this sale record? This will restore the stock quantity.</p>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="secondary-btn" id="cancelDeleteSaleBtn">Cancel</button>
+                <button type="button" class="danger-btn" id="confirmDeleteSaleBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/user-context.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/auth-check.js"></script>
+    <script src="js/sales.js"></script>
+</body>
+</html>

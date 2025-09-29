@@ -1,0 +1,62 @@
+{
+  "name": "inventory-forecasting-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Inventory Forecasting Web Application - A comprehensive inventory management and demand forecasting system",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "dev": "python3 -m http.server 3000",
+    "serve": "python3 -m http.server 9000",
+    "build": "echo 'No build process required for vanilla HTML/CSS/JS'",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'Add ESLint for code linting'",
+    "format": "echo 'Add Prettier for code formatting'"
+  },
+  "keywords": [
+    "inventory",
+    "forecasting",
+    "management",
+    "dashboard",
+    "firebase",
+    "javascript",
+    "html",
+    "css",
+    "charts",
+    "analytics"
+  ],
+  "author": "Raj Koli",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rajkoli145/inventory-mange.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Rajkoli145/inventory-mange/issues"
+  },
+  "homepage": "https://github.com/Rajkoli145/inventory-mange#readme",
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "firebase": "^10.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.52.0",
+    "prettier": "^3.0.3",
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "files": [
+    "*.html",
+    "js/**/*",
+    "styles/**/*",
+    "assets/**/*"
+  ]
+}

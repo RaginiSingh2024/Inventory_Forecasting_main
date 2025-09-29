@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forecast - Inventory Forecasting</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-page">
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-chart-line"></i>
+            <h2>Inventory Pro</h2>
+        </div>
+        
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="products.html"><i class="fas fa-box"></i> Products</a></li>
+            <li><a href="sales.html"><i class="fas fa-shopping-cart"></i> Sales</a></li>
+            <li><a href="forecast.html" class="active"><i class="fas fa-chart-bar"></i> Forecast</a></li>
+            <li><a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Demand Forecasting</h1>
+            <div class="forecast-controls">
+                <select id="forecastPeriod">
+                    <option value="7">Next 7 Days</option>
+                    <option value="14">Next 14 Days</option>
+                    <option value="30">Next 30 Days</option>
+                </select>
+                <select id="forecastMethod">
+                    <option value="moving_average">Moving Average</option>
+                    <option value="linear_regression">Linear Regression</option>
+                </select>
+                <button id="generateForecast" class="primary-btn">
+                    <i class="fas fa-chart-line"></i> Generate Forecast
+                </button>
+            </div>
+        </header>
+
+        <div class="forecast-summary">
+            <div class="summary-card">
+                <h3>Products to Restock</h3>
+                <p class="summary-value warning" id="restockCount">0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Predicted Sales</h3>
+                <p class="summary-value" id="predictedSales">$0.00</p>
+            </div>
+            <div class="summary-card">
+                <h3>Stock Out Risk</h3>
+                <p class="summary-value danger" id="stockOutRisk">0</p>
+            </div>
+            <div class="summary-card">
+                <h3>Forecast Accuracy</h3>
+                <p class="summary-value" id="forecastAccuracy">N/A</p>
+            </div>
+        </div>
+
+        <div class="forecast-charts">
+            <div class="chart-container large">
+                <h3>Demand Forecast vs Current Stock</h3>
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </div>
+
+        <div class="forecast-tables">
+            <div class="table-section">
+                <h3>Restock Recommendations</h3>
+                <div class="table-container">
+                    <table class="forecast-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Current Stock</th>
+                                <th>Predicted Demand</th>
+                                <th>Days Until Stock Out</th>
+                                <th>Recommended Order</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody id="restockTableBody">
+                            <!-- Restock recommendations will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <h3>Detailed Forecast</h3>
+                <div class="forecast-filters">
+                    <select id="productForecastFilter">
+                        <option value="">All Products</option>
+                    </select>
+                    <select id="categoryForecastFilter">
+                        <option value="">All Categories</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Food">Food</option>
+                        <option value="Books">Books</option>
+                        <option value="Home">Home</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table class="forecast-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Current Stock</th>
+                                <th>Avg Daily Sales</th>
+                                <th>Forecast Period</th>
+                                <th>Predicted Demand</th>
+                                <th>Stock Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailedForecastBody">
+                            <!-- Detailed forecast will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/user-context.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/auth-check.js"></script>
+    <script src="js/forecasting.js"></script>
+    <script src="js/forecast.js"></script>
+</body>
+</html>

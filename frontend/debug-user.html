@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug User Info - Inventory Forecasting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .info-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .info-card h3 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        .user-id {
+            background: #2c3e50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 14px;
+        }
+        .copy-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background: #2980b9;
+        }
+        .firebase-link {
+            background: #e74c3c;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        .firebase-link:hover {
+            background: #c0392b;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-card h4 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+        }
+        .stat-card p {
+            margin: 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 User Debug Information</h1>
+        
+        <div class="info-card">
+            <h3>📧 Current User Email</h3>
+            <div id="userEmail">Loading...</div>
+        </div>
+
+        <div class="info-card">
+            <h3>🆔 Firebase User ID</h3>
+            <div class="user-id" id="userId">Loading...</div>
+            <button class="copy-btn" onclick="copyUserId()">📋 Copy User ID</button>
+        </div>
+
+        <div class="info-card">
+            <h3>📊 Data Statistics</h3>
+            <div class="stats">
+                <div class="stat-card">
+                    <h4 id="productCount">0</h4>
+                    <p>Products</p>
+                </div>
+                <div class="stat-card">
+                    <h4 id="salesCount">0</h4>
+                    <p>Sales</p>
+                </div>
+                <div class="stat-card">
+                    <h4 id="totalValue">$0</h4>
+                    <p>Inventory Value</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>🔗 Firebase Console Path</h3>
+            <p>To view your data in Firebase Console, navigate to:</p>
+            <div class="user-id">
+                Firestore Database → users → <span id="userIdPath">your-user-id</span> → products/sales
+            </div>
+            <a href="https://console.firebase.google.com/" target="_blank" class="firebase-link">
+                🚀 Open Firebase Console
+            </a>
+        </div>
+
+        <div class="info-card">
+            <h3>📝 Instructions</h3>
+            <ol>
+                <li><strong>Copy your User ID</strong> from above</li>
+                <li><strong>Open Firebase Console</strong> using the link</li>
+                <li><strong>Go to Firestore Database</strong></li>
+                <li><strong>Navigate to:</strong> users → [paste your user ID] → products/sales</li>
+                <li><strong>Explore your data!</strong></li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/user-context.js"></script>
+
+    <script>
+        let currentUserId = null;
+
+        async function loadUserInfo() {
+            try {
+                // Wait for Firebase to initialize
+                await new Promise((resolve) => {
+                    const checkFirebase = () => {
+                        if (window.auth && window.db && window.userContext) {
+                            resolve();
+                        } else {
+                            setTimeout(checkFirebase, 100);
+                        }
+                    };
+                    checkFirebase();
+                });
+
+                await window.userContext.waitForInit();
+                
+                const userEmail = window.userContext.getCurrentUserEmail();
+                const userId = window.userContext.getCurrentUserId();
+                
+                if (userEmail && userId) {
+                    currentUserId = userId;
+                    document.getElementById('userEmail').textContent = userEmail;
+                    document.getElementById('userId').textContent = userId;
+                    document.getElementById('userIdPath').textContent = userId;
+                    
+                    // Load data statistics
+                    await loadDataStats(userId);
+                } else {
+                    document.getElementById('userEmail').textContent = 'Not logged in';
+                    document.getElementById('userId').textContent = 'Please login first';
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                document.getElementById('userEmail').textContent = 'Error loading user info';
+                document.getElementById('userId').textContent = error.message;
+            }
+        }
+
+        async function loadDataStats(userId) {
+            try {
+                // Get products count
+                const userProductsCollection = window.userContext.getUserCollection('products');
+                const productsSnapshot = await userProductsCollection.get();
+                const products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Get sales count
+                const userSalesCollection = window.userContext.getUserCollection('sales');
+                const salesSnapshot = await userSalesCollection.get();
+                const sales = salesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // Calculate inventory value
+                const totalValue = products.reduce((sum, product) => {
+                    return sum + (product.stock * product.price);
+                }, 0);
+                
+                // Update display
+                document.getElementById('productCount').textContent = products.length;
+                document.getElementById('salesCount').textContent = sales.length;
+                document.getElementById('totalValue').textContent = `$${totalValue.toLocaleString()}`;
+                
+            } catch (error) {
+                console.error('Error loading data stats:', error);
+            }
+        }
+
+        function copyUserId() {
+            if (currentUserId) {
+                navigator.clipboard.writeText(currentUserId).then(() => {
+                    alert('✅ User ID copied to clipboard!');
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = currentUserId;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    alert('✅ User ID copied to clipboard!');
+                });
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', loadUserInfo);
+    </script>
+</body>
+</html>

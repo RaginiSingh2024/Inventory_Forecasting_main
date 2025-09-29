@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Inventory Forecasting</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-page">
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-chart-line"></i>
+            <h2>Inventory Pro</h2>
+        </div>
+        
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="products.html" class="active"><i class="fas fa-box"></i> Products</a></li>
+            <li><a href="sales.html"><i class="fas fa-shopping-cart"></i> Sales</a></li>
+            <li><a href="forecast.html"><i class="fas fa-chart-bar"></i> Forecast</a></li>
+            <li><a href="reports.html"><i class="fas fa-file-alt"></i> Reports</a></li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Product Management</h1>
+            <button id="addProductBtn" class="primary-btn">
+                <i class="fas fa-plus"></i> Add Product
+            </button>
+        </header>
+
+        <div class="products-container">
+            <div class="products-filters">
+                <input type="text" id="searchProducts" placeholder="Search products...">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Appliances">Appliances</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Food & Beverages">Food & Beverages</option>
+                    <option value="Books & Media">Books & Media</option>
+                    <option value="Home & Garden">Home & Garden</option>
+                    <option value="Sports & Outdoors">Sports & Outdoors</option>
+                    <option value="Health & Beauty">Health & Beauty</option>
+                    <option value="Automotive">Automotive</option>
+                    <option value="Office Supplies">Office Supplies</option>
+                    <option value="Toys & Games">Toys & Games</option>
+                    <option value="Other">Other</option>
+                </select>
+                <select id="stockFilter">
+                    <option value="">All Stock Levels</option>
+                    <option value="low">Low Stock</option>
+                    <option value="normal">Normal Stock</option>
+                    <option value="high">High Stock</option>
+                </select>
+            </div>
+
+            <div class="products-table-container">
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Current Stock</th>
+                            <th>Reorder Level</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <!-- Products will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Product</h2>
+                <span class="close">&times;</span>
+            </div>
+            
+            <form id="productForm" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productName">Product Name *</label>
+                        <input type="text" id="productName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productCategory">Category *</label>
+                        <select id="productCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Appliances">Appliances</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Food & Beverages">Food & Beverages</option>
+                            <option value="Books & Media">Books & Media</option>
+                            <option value="Home & Garden">Home & Garden</option>
+                            <option value="Sports & Outdoors">Sports & Outdoors</option>
+                            <option value="Health & Beauty">Health & Beauty</option>
+                            <option value="Automotive">Automotive</option>
+                            <option value="Office Supplies">Office Supplies</option>
+                            <option value="Toys & Games">Toys & Games</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="customCategoryGroup" style="display: none;">
+                        <label for="customCategory">Custom Category *</label>
+                        <input type="text" id="customCategory" placeholder="Enter custom category name">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productPrice">Price (₹) *</label>
+                        <input type="number" id="productPrice" step="0.01" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productStock">Initial Stock *</label>
+                        <input type="number" id="productStock" min="0" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reorderLevel">Reorder Level *</label>
+                        <input type="number" id="reorderLevel" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productDescription">Description</label>
+                        <textarea id="productDescription" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="secondary-btn" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="primary-btn">
+                        <span id="submitBtnText">Add Product</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <span class="close">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <p>Are you sure you want to delete this product? This action cannot be undone.</p>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="secondary-btn" id="cancelDeleteBtn">Cancel</button>
+                <button type="button" class="danger-btn" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/user-context.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/auth-check.js"></script>
+    <script src="js/products.js"></script>
+</body>
+</html>

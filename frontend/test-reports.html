@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Reports - Inventory Forecasting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .success { color: #27ae60; font-weight: bold; }
+        .error { color: #e74c3c; font-weight: bold; }
+        .info { color: #3498db; font-weight: bold; }
+        .warning { color: #f39c12; font-weight: bold; }
+        #output {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .result-card {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .result-card h4 {
+            margin: 0 0 5px 0;
+            font-size: 20px;
+        }
+        .result-card p {
+            margin: 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Reports System Test</h1>
+        
+        <div class="test-section">
+            <h3>Step 1: Check System Status</h3>
+            <p>User: <span id="currentUser">Checking...</span></p>
+            <p>Products Loaded: <span id="productsCount">0</span></p>
+            <p>Sales Loaded: <span id="salesCount">0</span></p>
+            <button class="button" onclick="checkSystemStatus()">Check System Status</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 2: Test Report Generation</h3>
+            <p>Generate a sample report with your current data.</p>
+            <label>Date From: <input type="date" id="testDateFrom"></label>
+            <label>Date To: <input type="date" id="testDateTo"></label>
+            <button class="button" onclick="testReportGeneration()">Generate Test Report</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Step 3: Test Export Functions</h3>
+            <p>Test CSV export functionality.</p>
+            <button class="button" onclick="testCSVExport('sales')">Test Sales CSV</button>
+            <button class="button" onclick="testCSVExport('inventory')">Test Inventory CSV</button>
+            <button class="button" onclick="testCSVExport('forecast')">Test Forecast CSV</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Report Results</h3>
+            <div class="results" id="reportResults" style="display: none;">
+                <div class="result-card">
+                    <h4 id="totalRevenue">$0</h4>
+                    <p>Total Revenue</p>
+                </div>
+                <div class="result-card">
+                    <h4 id="totalUnits">0</h4>
+                    <p>Units Sold</p>
+                </div>
+                <div class="result-card">
+                    <h4 id="avgOrderValue">$0</h4>
+                    <p>Avg Order Value</p>
+                </div>
+                <div class="result-card">
+                    <h4 id="inventoryValue">$0</h4>
+                    <p>Inventory Value</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="output"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/user-context.js"></script>
+
+    <script>
+        let products = [];
+        let sales = [];
+        const output = document.getElementById('output');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            output.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            output.scrollTop = output.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        async function waitForFirebase() {
+            return new Promise((resolve) => {
+                const checkFirebase = () => {
+                    if (window.auth && window.db && window.userContext) {
+                        resolve();
+                    } else {
+                        setTimeout(checkFirebase, 100);
+                    }
+                };
+                checkFirebase();
+            });
+        }
+
+        async function checkSystemStatus() {
+            try {
+                log('🔍 Checking reports system status...', 'info');
+                
+                await waitForFirebase();
+                log('✅ Firebase and dependencies loaded', 'success');
+
+                await window.userContext.waitForInit();
+                
+                const currentUser = window.userContext.getCurrentUserEmail();
+                if (currentUser) {
+                    document.getElementById('currentUser').textContent = currentUser;
+                    document.getElementById('currentUser').className = 'success';
+                    log(`✅ Logged in as: ${currentUser}`, 'success');
+                } else {
+                    document.getElementById('currentUser').textContent = 'Not logged in';
+                    document.getElementById('currentUser').className = 'error';
+                    log('❌ Not logged in', 'error');
+                    return;
+                }
+
+                // Load data
+                log('📦 Loading products...', 'info');
+                const userProductsCollection = window.userContext.getUserCollection('products');
+                const productsSnapshot = await userProductsCollection.get();
+                products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                log('💰 Loading sales...', 'info');
+                const userSalesCollection = window.userContext.getUserCollection('sales');
+                const salesSnapshot = await userSalesCollection.get();
+                sales = salesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                document.getElementById('productsCount').textContent = products.length;
+                document.getElementById('salesCount').textContent = sales.length;
+
+                log(`✅ Loaded ${products.length} products and ${sales.length} sales`, 'success');
+
+                // Set default date range
+                const today = new Date();
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(today.getDate() - 30);
+                
+                document.getElementById('testDateTo').value = today.toISOString().split('T')[0];
+                document.getElementById('testDateFrom').value = thirtyDaysAgo.toISOString().split('T')[0];
+
+                if (products.length === 0) {
+                    log('⚠️ No products found. Please add products first using seed-data.html', 'warning');
+                }
+                if (sales.length === 0) {
+                    log('⚠️ No sales found. Please add sales data first using seed-data.html', 'warning');
+                }
+
+            } catch (error) {
+                log(`❌ Error checking system: ${error.message}`, 'error');
+            }
+        }
+
+        function testReportGeneration() {
+            try {
+                if (products.length === 0 || sales.length === 0) {
+                    log('❌ No data available. Please load products and sales first.', 'error');
+                    return;
+                }
+
+                log('📊 Testing report generation...', 'info');
+
+                const dateFrom = new Date(document.getElementById('testDateFrom').value);
+                const dateTo = new Date(document.getElementById('testDateTo').value);
+                dateTo.setHours(23, 59, 59, 999);
+
+                // Filter sales by date range
+                const filteredSales = sales.filter(sale => {
+                    const saleDate = new Date(sale.date.seconds ? sale.date.seconds * 1000 : sale.date);
+                    return saleDate >= dateFrom && saleDate <= dateTo;
+                });
+
+                log(`📅 Date range: ${dateFrom.toLocaleDateString()} to ${dateTo.toLocaleDateString()}`, 'info');
+                log(`📊 Filtered sales: ${filteredSales.length} out of ${sales.length}`, 'info');
+
+                // Calculate metrics
+                const totalRevenue = filteredSales.reduce((sum, sale) => sum + (sale.totalAmount || 0), 0);
+                const totalUnitsSold = filteredSales.reduce((sum, sale) => sum + (sale.quantity || 0), 0);
+                const avgOrderValue = filteredSales.length > 0 ? totalRevenue / filteredSales.length : 0;
+                const inventoryValue = products.reduce((sum, product) => sum + (product.stock * product.price), 0);
+
+                // Update display
+                document.getElementById('totalRevenue').textContent = `$${totalRevenue.toLocaleString()}`;
+                document.getElementById('totalUnits').textContent = totalUnitsSold.toLocaleString();
+                document.getElementById('avgOrderValue').textContent = `$${avgOrderValue.toFixed(2)}`;
+                document.getElementById('inventoryValue').textContent = `$${inventoryValue.toLocaleString()}`;
+                document.getElementById('reportResults').style.display = 'grid';
+
+                log(`✅ Report Summary:`, 'success');
+                log(`   💰 Total Revenue: $${totalRevenue.toLocaleString()}`, 'info');
+                log(`   📦 Units Sold: ${totalUnitsSold.toLocaleString()}`, 'info');
+                log(`   📊 Avg Order Value: $${avgOrderValue.toFixed(2)}`, 'info');
+                log(`   🏪 Inventory Value: $${inventoryValue.toLocaleString()}`, 'info');
+
+                log('🎉 Report generation test completed successfully!', 'success');
+
+            } catch (error) {
+                log(`❌ Report generation test failed: ${error.message}`, 'error');
+                console.error('Detailed error:', error);
+            }
+        }
+
+        function testCSVExport(type) {
+            try {
+                if (products.length === 0 || sales.length === 0) {
+                    log('❌ No data available for CSV export.', 'error');
+                    return;
+                }
+
+                log(`📄 Testing ${type} CSV export...`, 'info');
+
+                let csvContent = '';
+                let filename = '';
+
+                switch (type) {
+                    case 'sales':
+                        csvContent = generateSalesCSV();
+                        filename = 'test_sales_report.csv';
+                        break;
+                    case 'inventory':
+                        csvContent = generateInventoryCSV();
+                        filename = 'test_inventory_report.csv';
+                        break;
+                    case 'forecast':
+                        csvContent = generateForecastCSV();
+                        filename = 'test_forecast_report.csv';
+                        break;
+                }
+
+                // Show preview of CSV content
+                const preview = csvContent.split('\n').slice(0, 5).join('\n');
+                log(`📄 CSV Preview (${type}):\n${preview}...`, 'info');
+
+                // Simulate download
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                
+                if (link.download !== undefined) {
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                log(`✅ ${filename} export test completed successfully!`, 'success');
+
+            } catch (error) {
+                log(`❌ CSV export test failed: ${error.message}`, 'error');
+                console.error('Detailed error:', error);
+            }
+        }
+
+        // CSV generation functions (simplified versions)
+        function generateSalesCSV() {
+            const dateFrom = new Date(document.getElementById('testDateFrom').value);
+            const dateTo = new Date(document.getElementById('testDateTo').value);
+            dateTo.setHours(23, 59, 59, 999);
+
+            const filteredSales = sales.filter(sale => {
+                const saleDate = new Date(sale.date.seconds ? sale.date.seconds * 1000 : sale.date);
+                return saleDate >= dateFrom && saleDate <= dateTo;
+            });
+
+            let csv = 'Date,Product,Category,Quantity,Unit Price,Total Amount,Notes\n';
+            
+            filteredSales.forEach(sale => {
+                const product = products.find(p => p.id === sale.productId);
+                const saleDate = new Date(sale.date.seconds ? sale.date.seconds * 1000 : sale.date);
+                
+                csv += `${saleDate.toLocaleDateString()},`;
+                csv += `"${sale.productName}",`;
+                csv += `"${product ? product.category : 'Unknown'}",`;
+                csv += `${sale.quantity},`;
+                csv += `${sale.unitPrice.toFixed(2)},`;
+                csv += `${sale.totalAmount.toFixed(2)},`;
+                csv += `"${sale.notes || ''}"\n`;
+            });
+
+            return csv;
+        }
+
+        function generateInventoryCSV() {
+            let csv = 'Product,Category,Current Stock,Reorder Level,Unit Price,Stock Value,Status\n';
+            
+            products.forEach(product => {
+                const stockValue = product.stock * product.price;
+                let status = 'Normal';
+                if (product.stock <= product.reorderLevel) {
+                    status = 'Low Stock';
+                }
+                if (product.stock === 0) {
+                    status = 'Out of Stock';
+                }
+
+                csv += `"${product.name}",`;
+                csv += `"${product.category}",`;
+                csv += `${product.stock},`;
+                csv += `${product.reorderLevel},`;
+                csv += `${product.price.toFixed(2)},`;
+                csv += `${stockValue.toFixed(2)},`;
+                csv += `"${status}"\n`;
+            });
+
+            return csv;
+        }
+
+        function generateForecastCSV() {
+            let csv = 'Product,Category,Current Stock,Avg Daily Sales,7-Day Forecast,Status\n';
+            
+            products.forEach(product => {
+                // Simple forecast calculation
+                const last30Days = sales.filter(sale => {
+                    const saleDate = new Date(sale.date.seconds ? sale.date.seconds * 1000 : sale.date);
+                    const thirtyDaysAgo = new Date();
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                    return saleDate >= thirtyDaysAgo && sale.productId === product.id;
+                });
+
+                const totalSales = last30Days.reduce((sum, sale) => sum + sale.quantity, 0);
+                const avgDailySales = totalSales / 30;
+                const forecastedDemand = avgDailySales * 7;
+
+                let status = 'Normal';
+                if (product.stock <= product.reorderLevel) {
+                    status = 'Critical';
+                } else if (forecastedDemand > product.stock) {
+                    status = 'Warning';
+                }
+
+                csv += `"${product.name}",`;
+                csv += `"${product.category}",`;
+                csv += `${product.stock},`;
+                csv += `${avgDailySales.toFixed(2)},`;
+                csv += `${forecastedDemand.toFixed(2)},`;
+                csv += `"${status}"\n`;
+            });
+
+            return csv;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('📊 Reports Test Tool initialized', 'info');
+            log('👆 Click "Check System Status" to begin', 'info');
+            
+            // Auto-check system status
+            setTimeout(checkSystemStatus, 1000);
+        });
+    </script>
+</body>
+</html>

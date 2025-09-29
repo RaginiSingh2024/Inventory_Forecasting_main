@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Data Seeder - Inventory Forecasting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        .section h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        .button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .success { color: #27ae60; font-weight: bold; }
+        .error { color: #e74c3c; font-weight: bold; }
+        .info { color: #3498db; font-weight: bold; }
+        .warning { color: #f39c12; font-weight: bold; }
+        #log {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+        .data-preview {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .stat-card {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-card h4 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+        }
+        .stat-card p {
+            margin: 0;
+            font-size: 14px;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌱 Real Data Seeder</h1>
+        
+        <div class="warning-box">
+            <strong>⚠️ Important:</strong> This will add sample inventory data to your account.
+        </div>
+
+        <div class="section">
+            <h3>👤 User Status</h3>
+            <p>Current User: <span id="currentUser">Checking...</span></p>
+            <p>User ID: <span id="userId">Checking...</span></p>
+            <button id="checkUserBtn" class="button">Check Login Status</button>
+        </div>
+
+        <div class="section">
+            <h3>📦 Products Data</h3>
+            <p>Add realistic product inventory with proper categories, pricing, and stock levels.</p>
+            <div class="stats" id="productStats" style="display: none;">
+                <div class="stat-card">
+                    <h4 id="productCount">0</h4>
+                    <p>Products to Add</p>
+                </div>
+                <div class="stat-card">
+                    <h4 id="categoryCount">0</h4>
+                    <p>Categories</p>
+                </div>
+            </div>
+            <button id="previewProductsBtn" class="button" disabled>Preview Products</button>
+            <button id="addProductsBtn" class="button" disabled>Add Products to Database</button>
+            <div id="productPreview" class="data-preview" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>💰 Sales Data</h3>
+            <p>Add realistic sales transactions for the past 30 days with proper dates and amounts.</p>
+            <div class="stats" id="salesStats" style="display: none;">
+                <div class="stat-card">
+                    <h4 id="salesCount">0</h4>
+                    <p>Sales to Add</p>
+                </div>
+                <div class="stat-card">
+                    <h4 id="totalRevenue">$0</h4>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+            <button id="previewSalesBtn" class="button" disabled>Preview Sales</button>
+            <button id="addSalesBtn" class="button" disabled>Add Sales to Database</button>
+            <div id="salesPreview" class="data-preview" style="display: none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>🚀 Quick Setup</h3>
+            <p>Add both products and sales data in one click for a complete demo setup.</p>
+            <button id="fullSetupBtn" class="button" disabled>Complete Setup (Products + Sales)</button>
+        </div>
+
+        <div id="log"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/user-context.js"></script>
+
+    <script>
+        let currentUser = null;
+        let userId = null;
+        let productsData = [];
+        let salesData = [];
+
+        // DOM elements
+        const currentUserSpan = document.getElementById('currentUser');
+        const userIdSpan = document.getElementById('userId');
+        const log = document.getElementById('log');
+
+        // Realistic products data with varied stock levels for forecasting
+        const PRODUCTS_DATA = [
+            // Electronics - Mix of low, medium, and high stock
+            { name: 'MacBook Pro 16"', category: 'Electronics', price: 2499.99, stock: 3, reorderLevel: 5, description: 'High-performance laptop for professionals' }, // LOW STOCK
+            { name: 'iPhone 15 Pro', category: 'Electronics', price: 999.99, stock: 8, reorderLevel: 10, description: 'Latest smartphone with advanced camera' }, // LOW STOCK
+            { name: 'iPad Air', category: 'Electronics', price: 599.99, stock: 28, reorderLevel: 8, description: 'Versatile tablet for work and creativity' },
+            { name: 'AirPods Pro', category: 'Electronics', price: 249.99, stock: 12, reorderLevel: 15, description: 'Wireless earbuds with noise cancellation' }, // LOW STOCK
+            { name: 'Apple Watch Series 9', category: 'Electronics', price: 399.99, stock: 6, reorderLevel: 8, description: 'Advanced smartwatch with health features' }, // LOW STOCK
+            { name: 'Samsung 4K TV 55"', category: 'Electronics', price: 799.99, stock: 2, reorderLevel: 4, description: 'Ultra HD Smart TV with HDR' }, // CRITICAL
+            { name: 'Sony WH-1000XM5', category: 'Electronics', price: 349.99, stock: 18, reorderLevel: 6, description: 'Premium noise-canceling headphones' },
+            { name: 'Nintendo Switch OLED', category: 'Electronics', price: 349.99, stock: 7, reorderLevel: 10, description: 'Portable gaming console' }, // LOW STOCK
+
+            // Furniture - Some low stock items
+            { name: 'Ergonomic Office Chair', category: 'Furniture', price: 299.99, stock: 4, reorderLevel: 5, description: 'Comfortable chair with lumbar support' }, // LOW STOCK
+            { name: 'Standing Desk', category: 'Furniture', price: 499.99, stock: 1, reorderLevel: 3, description: 'Adjustable height desk for better health' }, // CRITICAL
+            { name: 'Bookshelf Oak Wood', category: 'Furniture', price: 199.99, stock: 8, reorderLevel: 2, description: '5-tier wooden bookshelf' },
+            { name: 'Coffee Table Modern', category: 'Furniture', price: 149.99, stock: 3, reorderLevel: 4, description: 'Minimalist glass coffee table' }, // LOW STOCK
+            { name: 'Dining Table Set', category: 'Furniture', price: 699.99, stock: 6, reorderLevel: 2, description: 'Table with 4 chairs, solid wood' },
+            { name: 'Sofa 3-Seater', category: 'Furniture', price: 899.99, stock: 1, reorderLevel: 1, description: 'Comfortable fabric sofa' }, // CRITICAL
+
+            // Appliances - Mix of stock levels
+            { name: 'KitchenAid Mixer', category: 'Appliances', price: 379.99, stock: 3, reorderLevel: 4, description: 'Professional stand mixer' }, // LOW STOCK
+            { name: 'Dyson V15 Vacuum', category: 'Appliances', price: 749.99, stock: 2, reorderLevel: 3, description: 'Cordless vacuum with laser detection' }, // LOW STOCK
+            { name: 'Instant Pot Duo', category: 'Appliances', price: 99.99, stock: 35, reorderLevel: 12, description: '7-in-1 electric pressure cooker' },
+            { name: 'Breville Espresso Machine', category: 'Appliances', price: 599.99, stock: 1, reorderLevel: 2, description: 'Professional espresso maker' }, // CRITICAL
+            { name: 'Air Fryer XL', category: 'Appliances', price: 129.99, stock: 8, reorderLevel: 10, description: 'Large capacity air fryer' }, // LOW STOCK
+            { name: 'Robot Vacuum', category: 'Appliances', price: 299.99, stock: 16, reorderLevel: 5, description: 'Smart robotic vacuum cleaner' },
+
+            // Clothing - Some seasonal low stock
+            { name: 'Premium Wool Sweater', category: 'Clothing', price: 89.99, stock: 12, reorderLevel: 15, description: 'Soft merino wool pullover' }, // LOW STOCK
+            { name: 'Designer Jeans', category: 'Clothing', price: 129.99, stock: 18, reorderLevel: 20, description: 'Premium denim with perfect fit' }, // LOW STOCK
+            { name: 'Leather Jacket', category: 'Clothing', price: 249.99, stock: 4, reorderLevel: 6, description: 'Genuine leather biker jacket' }, // LOW STOCK
+            { name: 'Running Shoes', category: 'Clothing', price: 149.99, stock: 42, reorderLevel: 15, description: 'Professional athletic footwear' },
+            { name: 'Winter Coat', category: 'Clothing', price: 199.99, stock: 6, reorderLevel: 8, description: 'Warm down-filled winter coat' }, // LOW STOCK
+
+            // Home & Garden - Mix of stock levels
+            { name: 'Smart Thermostat', category: 'Home & Garden', price: 199.99, stock: 6, reorderLevel: 8, description: 'WiFi-enabled temperature control' }, // LOW STOCK
+            { name: 'Garden Tool Set', category: 'Home & Garden', price: 79.99, stock: 8, reorderLevel: 10, description: '10-piece gardening kit' }, // LOW STOCK
+            { name: 'Outdoor Fire Pit', category: 'Home & Garden', price: 299.99, stock: 2, reorderLevel: 3, description: 'Steel fire pit with screen' }, // LOW STOCK
+            { name: 'Smart Security Camera', category: 'Home & Garden', price: 149.99, stock: 35, reorderLevel: 12, description: '4K outdoor security camera' },
+            { name: 'LED String Lights', category: 'Home & Garden', price: 29.99, stock: 20, reorderLevel: 25, description: 'Waterproof outdoor lighting' } // LOW STOCK
+        ];
+
+        function logMessage(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            document.getElementById('log').textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        async function waitForFirebase() {
+            return new Promise((resolve) => {
+                const checkFirebase = () => {
+                    if (window.auth && window.db && window.userContext) {
+                        resolve();
+                    } else {
+                        setTimeout(checkFirebase, 100);
+                    }
+                };
+                checkFirebase();
+            });
+        }
+
+        async function checkUserStatus() {
+            try {
+                await waitForFirebase();
+                await window.userContext.waitForInit();
+                
+                currentUser = window.userContext.getCurrentUserEmail();
+                userId = window.userContext.getCurrentUserId();
+                
+                if (currentUser && userId) {
+                    currentUserSpan.textContent = currentUser;
+                    currentUserSpan.className = 'success';
+                    userIdSpan.textContent = userId.substring(0, 8) + '...';
+                    userIdSpan.className = 'success';
+                    
+                    // Enable buttons
+                    document.getElementById('previewProductsBtn').disabled = false;
+                    document.getElementById('previewSalesBtn').disabled = false;
+                    document.getElementById('fullSetupBtn').disabled = false;
+                    
+                    logMessage(`✅ Logged in as: ${currentUser}`, 'success');
+                    logMessage(`✅ User ID: ${userId}`, 'success');
+                } else {
+                    currentUserSpan.textContent = 'Not logged in';
+                    currentUserSpan.className = 'error';
+                    userIdSpan.textContent = 'N/A';
+                    userIdSpan.className = 'error';
+                    logMessage('❌ Not logged in. Please login first.', 'error');
+                }
+            } catch (error) {
+                logMessage(`❌ Error checking user status: ${error.message}`, 'error');
+            }
+        }
+
+        function generateSalesData(products) {
+            const sales = [];
+            const today = new Date();
+            
+            // Generate sales for the past 30 days
+            for (let i = 0; i < 30; i++) {
+                const saleDate = new Date(today);
+                saleDate.setDate(saleDate.getDate() - i);
+                
+                // Random number of sales per day (1-8) - more sales for better forecasting
+                const salesPerDay = Math.floor(Math.random() * 8) + 1;
+                
+                for (let j = 0; j < salesPerDay; j++) {
+                    const randomProduct = products[Math.floor(Math.random() * products.length)];
+                    const quantity = Math.floor(Math.random() * 5) + 1; // 1-5 items
+                    
+                    // Add some random time to the date
+                    const saleDateTime = new Date(saleDate);
+                    saleDateTime.setHours(Math.floor(Math.random() * 24));
+                    saleDateTime.setMinutes(Math.floor(Math.random() * 60));
+                    
+                    sales.push({
+                        productId: randomProduct.id,
+                        productName: randomProduct.name,
+                        quantity: quantity,
+                        unitPrice: randomProduct.price,
+                        totalAmount: quantity * randomProduct.price,
+                        date: saleDateTime,
+                        notes: `Sale of ${randomProduct.name}`,
+                        createdAt: new Date()
+                    });
+                }
+            }
+            
+            return sales.sort((a, b) => b.date - a.date); // Sort by date descending
+        }
+
+        function previewProducts() {
+            productsData = PRODUCTS_DATA.map(product => ({
+                ...product,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            }));
+            
+            // Update stats
+            document.getElementById('productCount').textContent = productsData.length;
+            document.getElementById('categoryCount').textContent = [...new Set(productsData.map(p => p.category))].length;
+            document.getElementById('productStats').style.display = 'grid';
+            
+            // Show preview
+            const preview = productsData.slice(0, 5).map(p => 
+                `${p.name} - ${p.category} - $${p.price} (Stock: ${p.stock})`
+            ).join('\n');
+            
+            document.getElementById('productPreview').textContent = 
+                `Sample Products (showing 5 of ${productsData.length}):\n\n${preview}\n\n... and ${productsData.length - 5} more`;
+            document.getElementById('productPreview').style.display = 'block';
+            document.getElementById('addProductsBtn').disabled = false;
+            
+            logMessage(`📦 Generated ${productsData.length} products across ${[...new Set(productsData.map(p => p.category))].length} categories`, 'success');
+        }
+
+        function previewSales() {
+            // Use existing products or generate sample ones
+            const sampleProducts = productsData.length > 0 ? productsData : PRODUCTS_DATA;
+            salesData = generateSalesData(sampleProducts);
+            
+            const totalRevenue = salesData.reduce((sum, sale) => sum + sale.totalAmount, 0);
+            
+            // Update stats
+            document.getElementById('salesCount').textContent = salesData.length;
+            document.getElementById('totalRevenue').textContent = `$${totalRevenue.toLocaleString()}`;
+            document.getElementById('salesStats').style.display = 'grid';
+            
+            // Show preview
+            const preview = salesData.slice(0, 5).map(s => 
+                `${s.productName} x${s.quantity} = $${s.totalAmount.toFixed(2)} (${s.date.toLocaleDateString()})`
+            ).join('\n');
+            
+            document.getElementById('salesPreview').textContent = 
+                `Sample Sales (showing 5 of ${salesData.length}):\n\n${preview}\n\n... and ${salesData.length - 5} more`;
+            document.getElementById('salesPreview').style.display = 'block';
+            document.getElementById('addSalesBtn').disabled = false;
+            
+            logMessage(`💰 Generated ${salesData.length} sales totaling $${totalRevenue.toLocaleString()}`, 'success');
+        }
+
+        async function addProducts() {
+            try {
+                if (!userId) {
+                    throw new Error('User not authenticated');
+                }
+                
+                logMessage('📦 Adding products to database...', 'info');
+                const userProductsCollection = window.userContext.getUserCollection('products');
+                
+                let addedCount = 0;
+                const addedProducts = []; // Store products with their Firebase IDs
+                
+                for (const product of productsData) {
+                    const docRef = await userProductsCollection.add(product);
+                    product.id = docRef.id; // Add the Firebase ID to the product
+                    addedProducts.push(product);
+                    addedCount++;
+                    logMessage(`  ✅ Added: ${product.name}`, 'success');
+                }
+                
+                // Update the global productsData with IDs
+                productsData = addedProducts;
+                
+                logMessage(`🎉 Successfully added ${addedCount} products!`, 'success');
+                
+            } catch (error) {
+                logMessage(`❌ Error adding products: ${error.message}`, 'error');
+            }
+        }
+
+        async function addSales() {
+            try {
+                if (!userId) {
+                    throw new Error('User not authenticated');
+                }
+                
+                logMessage('💰 Adding sales to database...', 'info');
+                const userSalesCollection = window.userContext.getUserCollection('sales');
+                
+                let addedCount = 0;
+                for (const sale of salesData) {
+                    await userSalesCollection.add(sale);
+                    addedCount++;
+                    if (addedCount % 10 === 0) {
+                        logMessage(`  📊 Added ${addedCount}/${salesData.length} sales...`, 'info');
+                    }
+                }
+                
+                logMessage(`🎉 Successfully added ${addedCount} sales!`, 'success');
+                
+            } catch (error) {
+                logMessage(`❌ Error adding sales: ${error.message}`, 'error');
+            }
+        }
+
+        async function fullSetup() {
+            try {
+                logMessage('🚀 Starting complete setup...', 'info');
+                
+                // Step 1: Generate and add products first
+                previewProducts();
+                await addProducts();
+                
+                // Step 2: Generate sales using products with proper IDs
+                previewSales();
+                await addSales();
+                
+                logMessage('🎉 Complete setup finished! Your inventory system is ready!', 'success');
+                logMessage('🔄 Go back to your main application to see the data.', 'info');
+                
+            } catch (error) {
+                logMessage(`❌ Error during full setup: ${error.message}`, 'error');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('checkUserBtn').addEventListener('click', checkUserStatus);
+        document.getElementById('previewProductsBtn').addEventListener('click', previewProducts);
+        document.getElementById('previewSalesBtn').addEventListener('click', previewSales);
+        document.getElementById('addProductsBtn').addEventListener('click', addProducts);
+        document.getElementById('addSalesBtn').addEventListener('click', addSales);
+        document.getElementById('fullSetupBtn').addEventListener('click', fullSetup);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            logMessage('🌱 Real Data Seeder initialized', 'info');
+            logMessage('👆 Click "Check Login Status" to begin', 'info');
+            
+            // Auto-check user status
+            setTimeout(checkUserStatus, 1000);
+        });
+    </script>
+</body>
+</html>
