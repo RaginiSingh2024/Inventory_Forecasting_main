@@ -1,6 +1,8 @@
-# 📦 Inventory Forecasting Web Application Documentation
+# 📊 Inventory Forecasting Web Application Documentation
 
 > **A comprehensive web-based inventory management and demand forecasting solution designed for modern businesses to optimize stock levels, predict future demand, and streamline operations.**
+> 
+![Inventory Pro Dashboard](https://img.shields.io/badge/Status-Production%20Ready-brightgreen) ![Version](https://img.shields.io/badge/Version-1.0.0-blue) ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 This documentation explains the structure, functionality, and concepts used in the **Inventory Forecasting Web Application**, built with **HTML, CSS, Vanilla JavaScript, and Firebase**.
 
@@ -87,15 +89,6 @@ Inventory Pro provides an intelligent dashboard that automatically tracks invent
 - **ESLint** - Code quality and linting
 - **Prettier** - Code formatting
 - **Live Server** - Development server
-
-## Tech Stack
-
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Backend**: Firebase (Firestore Database + Authentication)
-- **Charts**: Chart.js
-- **Icons**: Font Awesome
-- **Hosting**: Can be deployed to Firebase Hosting
-
 
 
 ## 🚀 Quick Setup Instructions
@@ -285,9 +278,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Raj Koli**
-- GitHub: [@Rajkoli145](https://github.com/Rajkoli145)
-- Project: [Inventory Management System](https://github.com/Rajkoli145/inventory-mange)
+**Ragini Singh**
+- GitHub: [@RaginiSingh2024](https://github.com/RaginiSingh2024)
+- Project: [Inventory Management System](https://github.com/RaginiSingh2024/Inventory_Forecasting_main)
 
 ---
 
@@ -295,7 +288,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **🚀 Ready to optimize your inventory management?**
 
-[Get Started](#-quick-setup-instructions) • [View Demo](https://your-demo-url.com) • [Report Bug](https://github.com/Rajkoli145/inventory-mange/issues)
+[Get Started](#-quick-setup-instructions) • [View Demo](https://your-demo-url.com) • [Report Bug](https://github.com/RaginiSingh2024/Inventory_Forecasting_main/issues)
 
 </div>
 
