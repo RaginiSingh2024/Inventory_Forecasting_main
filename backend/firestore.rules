@@ -1,18 +1,32 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow authenticated users to read and write to products and sales collections
+    // Allow authenticated users to read and write to their user data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Allow access to user-specific subcollections
+      match /products/{productId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      match /sales/{saleId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Allow access to any other subcollections under user document
+      match /{subcollection}/{document} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Global collections (if needed for shared data)
     match /products/{document} {
       allow read, write: if request.auth != null;
     }
     
     match /sales/{document} {
       allow read, write: if request.auth != null;
-    }
-    
-    // Allow authenticated users to read and write to their user data
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
     // Deny all other access

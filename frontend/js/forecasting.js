@@ -2,8 +2,7 @@
 class ForecastingEngine {
     constructor() {
         this.algorithms = {
-            moving_average: this.movingAverage.bind(this),
-            linear_regression: this.linearRegression.bind(this)
+            moving_average: this.movingAverage.bind(this)
         };
     }
 
@@ -21,36 +20,6 @@ class ForecastingEngine {
         return sum / windowSize;
     }
 
-    // Linear Regression Algorithm
-    linearRegression(salesData, forecastPeriod = 7) {
-        if (salesData.length < 2) {
-            return salesData.length > 0 ? salesData[0] : 0;
-        }
-
-        const n = salesData.length;
-        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
-
-        // Calculate sums for linear regression formula
-        for (let i = 0; i < n; i++) {
-            const x = i + 1; // Time period (1, 2, 3, ...)
-            const y = salesData[i]; // Sales value
-            
-            sumX += x;
-            sumY += y;
-            sumXY += x * y;
-            sumXX += x * x;
-        }
-
-        // Calculate slope (m) and intercept (b) for y = mx + b
-        const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-        const intercept = (sumY - slope * sumX) / n;
-
-        // Predict next value
-        const nextX = n + 1;
-        const prediction = slope * nextX + intercept;
-
-        return Math.max(0, prediction); // Ensure non-negative prediction
-    }
 
     // Exponential Smoothing Algorithm
     exponentialSmoothing(salesData, alpha = 0.3) {

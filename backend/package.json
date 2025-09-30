@@ -32,16 +32,16 @@
     "authentication",
     "hosting"
   ],
-  "author": "Raj Koli",
+  "author": "Ragini Singh",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Rajkoli145/inventory-mange.git"
+    "url": "https://github.com/RaginiSingh2024/inventory-forecasting.git"
   },
   "bugs": {
-    "url": "https://github.com/Rajkoli145/inventory-mange/issues"
+    "url": "https://github.com/RaginiSingh2024/inventory-forecasting/issues"
   },
-  "homepage": "https://github.com/Rajkoli145/inventory-mange#readme",
+  "homepage": "https://github.com/RaginiSingh2024/inventory-forecasting#readme",
   "dependencies": {
     "firebase-admin": "^11.11.0",
     "firebase-functions": "^4.5.0"

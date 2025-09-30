@@ -16,9 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show loading state
             showLoadingState();
             
-            // Load sample charts immediately for better UX
-            forceLoadSampleCharts();
-            
             await loadDashboardStats();
             await loadCharts();
             await loadRecentActivities();
@@ -50,8 +47,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showErrorState() {
-        // Use sample data if database fails
-        loadSampleData();
+        // Show empty state if database fails
+        console.log('Database connection failed, showing empty dashboard');
+        // Initialize with empty data
+        dataCache.products = [];
+        dataCache.sales = [];
+        
+        // Update stats with empty data
+        animateCounter('totalProducts', 0);
+        animateCounter('totalStock', 0);
+        animateCounter('lowStockItems', 0);
+        animateCounter('totalSales', 0, '₹', 2);
     }
 
     // Force load sample data immediately for better UX
@@ -96,10 +102,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
             } else {
-                // Use sample data if user context or database not available
-                const sampleData = getSampleData();
-                products = sampleData.products;
-                sales = sampleData.sales;
+                // Use empty data if user context or database not available
+                products = [];
+                sales = [];
             }
 
             // Calculate stats
@@ -116,8 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('Error loading dashboard stats:', error);
-            // Fallback to sample data
-            loadSampleData();
+            // Show empty state on error
+            showErrorState();
         }
     }
 
@@ -174,12 +179,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     sales = salesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     dataCache.sales = sales;
                 } else {
-                    sales = getSampleData().sales;
+                    sales = [];
                 }
             } else if (dataCache.sales.length > 0) {
                 sales = dataCache.sales;
             } else {
-                sales = getSampleData().sales;
+                sales = [];
             }
 
             // Group sales by date (last 7 days)
@@ -471,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Loading sales chart with real data...');
         
         // Get real sales data
-        const sales = getSampleData().sales;
+        const sales = [];
         
         // Group sales by date (last 7 days)
         const last7Days = [];
@@ -697,17 +702,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     dataCache.products = products;
                 } else {
-                    products = getSampleData().products;
+                    products = [];
                 }
             } else if (dataCache.products.length > 0) {
                 products = dataCache.products;
             } else {
-                products = getSampleData().products;
+                products = [];
             }
 
-            // Use fixed sample data for consistent display
-            const categories = ['Electronics', 'Furniture', 'Appliances'];
-            const stockValues = [87, 34, 46];
+            // Calculate actual stock levels by category
+            const categoryStock = {};
+            products.forEach(product => {
+                const category = product.category || 'Other';
+                categoryStock[category] = (categoryStock[category] || 0) + (product.stock || 0);
+            });
+            
+            const categories = Object.keys(categoryStock);
+            const stockValues = Object.values(categoryStock);
+            
+            // If no products, show empty state
+            if (categories.length === 0) {
+                categories.push('No Data');
+                stockValues.push(0);
+            }
 
             // Create chart
             const ctx = document.getElementById('stockChart').getContext('2d');
@@ -810,12 +827,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     const productsSnapshot = await userProductsCollection.get();
                     products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 } else {
-                    products = getSampleData().products;
+                    products = [];
                 }
             } else if (dataCache.products.length > 0) {
                 products = dataCache.products;
             } else {
-                products = getSampleData().products;
+                products = [];
             }
 
             const lowStockProducts = products.filter(product => product.stock <= (product.reorderLevel || 5));
@@ -859,12 +876,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     const salesSnapshot = await userSalesCollection.orderBy('date', 'desc').get();
                     sales = salesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 } else {
-                    sales = getSampleData().sales;
+                    sales = [];
                 }
             } else if (dataCache.sales.length > 0) {
                 sales = dataCache.sales;
             } else {
-                sales = getSampleData().sales;
+                sales = [];
             }
 
             const recentSales = sales.slice(0, 5); // Get last 5 sales

@@ -10,7 +10,7 @@ The application is designed to help businesses manage their **inventory** and **
 - Authentication (Admin login)
 - Real-time dashboard
 - Product & sales management
-- Demand forecasting (Moving Average & Linear Regression)
+- Demand forecasting (Moving Average)
 - Reports and analytics
 
 ---
@@ -52,9 +52,8 @@ Inventory Pro provides an intelligent dashboard that automatically tracks invent
 - **Customer Insights**: Sales patterns and trends analysis
 
 ### 🔮 **Advanced Forecasting**
-- **Multiple Algorithms**: 
+- **Moving Average Algorithm**: 
   - Moving Average (7, 14, 30 days)
-  - Linear Regression forecasting
   - Seasonal trend analysis
 - **Demand Prediction**: Future inventory requirements
 - **Restock Recommendations**: When and how much to order
@@ -368,13 +367,6 @@ function movingAverage(sales, windowSize) {
 }
 ```
 
-### Linear Regression
-Uses historical trends to predict future sales patterns.
-```javascript
-function linearRegression(salesData, forecastPeriod) {
-    // Implementation in forecasting.js
-}
-```
 
 ## Key Features Explained
 
@@ -391,7 +383,7 @@ function linearRegression(salesData, forecastPeriod) {
 - **Data Validation**: Prevents overselling and invalid entries
 
 ### Forecasting Engine
-- **Multiple Algorithms**: Choose between moving average and linear regression
+- **Moving Average Algorithm**: Uses recent sales data to predict future demand
 - **Flexible Periods**: Forecast for 7, 14, or 30 days
 - **Restock Recommendations**: Intelligent suggestions based on demand
 - **Risk Analysis**: Identify products at risk of stock-out
@@ -437,6 +429,7 @@ Extend the `ForecastingEngine` class in `forecasting.js`:
 class ForecastingEngine {
     yourCustomAlgorithm(salesData) {
         // Your implementation
+        // Currently supports Moving Average algorithm
     }
 }
 ```

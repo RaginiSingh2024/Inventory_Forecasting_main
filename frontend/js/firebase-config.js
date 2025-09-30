@@ -2,13 +2,13 @@
 // Replace with your actual Firebase project configuration
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDSprraOBsOLmYZzaPOuxwe1QgQZ0KfzSw",
-    authDomain: "inventory-forecasting-d406b.firebaseapp.com",
-    projectId: "inventory-forecasting-d406b",
-    storageBucket: "inventory-forecasting-d406b.firebasestorage.app",
-    messagingSenderId: "701346681771",
-    appId: "1:701346681771:web:667cd682bd2066b574f8ee",
-    measurementId: "G-3J8VRCVJF6"
+    apiKey: "AIzaSyBmO8LdvQ9_R22c4KUxxiMQg0YO9j06ZOc",
+  authDomain: "inventory---forecast.firebaseapp.com",
+  projectId: "inventory---forecast",
+  storageBucket: "inventory---forecast.firebasestorage.app",
+  messagingSenderId: "368692153179",
+  appId: "1:368692153179:web:eeb23b5b2b73415d26287e",
+  measurementId: "G-DR4HGRKJWW"
   };
   
 
