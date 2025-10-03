@@ -3,17 +3,23 @@ name: Deploy Frontend
 on:
   push:
     branches:
-      - main   
+      - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Deploy frontend to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload frontend folder
+        uses: actions/upload-pages-artifact@v1
         with:
-          branch: gh-pages   # Deployment branch
-          folder: frontend   # frontend folder
+          path: ./frontend   # 👈 important (frontend folder serve hoga)
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
