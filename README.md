@@ -30,7 +30,7 @@ Inventory Pro provides an intelligent dashboard that automatically tracks invent
 
 ### 🔐 **Authentication & Security**
 - **Firebase Authentication** with email/password
-- **Demo Mode** for testing (admin@demo.com / demo123)
+- **Demo Mode** for testing (ragini@gmail.com/ ragini123)
 - **Secure Session Management** with automatic logout
 - **User Data Isolation** - each user sees only their data
 
