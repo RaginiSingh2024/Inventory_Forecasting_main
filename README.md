@@ -507,5 +507,6 @@ For issues and questions:
 - 📄 **Project Documentation (Google Docs)** → [Click Here](https://docs.google.com/document/d/1atWaNv78lgz0vgua7sFgRahmFmg5SqQgGEluYJbuGy8/edit?usp=sharing)
 - - 🌐 **Live Project (Deployed Site)** → [Click Here](https://iridescent-swan-bb267b.netlify.app/)  
 - 💻 **GitHub Repository** → [Click Here](https://github.com/RaginiSingh2024/Inventory_Forecasting_main)
+  
 
-## Thankyou ❤️
+**Note**: This application is designed for educational and demonstration purposes ❤️. For production use, implement additional security measures and data validation.
