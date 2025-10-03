@@ -104,7 +104,7 @@ Inventory Pro provides an intelligent dashboard that automatically tracks invent
 
 ### **1. Clone the Repository**
 ```bash
-git clone https://github.com/Rajkoli145/inventory-mange.git
+git clone https://github.com/RaginiSingh2024/Inventory_Forecasting_main.git
 cd inventory-forecasting
 ```
 
@@ -149,8 +149,8 @@ npm run serve          # Starts on port 9000
 
 ### **6. Demo Login**
 ```
-📧 Email: admin@demo.com
-🔑 Password: admin123
+📧 Email: ragini@gmail.com
+🔑 Password: ragini123
 ```
 
 ## 📱 Application Walkthrough
@@ -288,7 +288,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **🚀 Ready to optimize your inventory management?**
 
-[Get Started](#-quick-setup-instructions) • [View Demo](https://your-demo-url.com) • [Report Bug](https://github.com/RaginiSingh2024/Inventory_Forecasting_main/issues)
+[Get Started](#-quick-setup-instructions) • [View Demo](https://iridescent-swan-bb267b.netlify.app/index.html) • [Report Bug]  https://github.com/RaginiSingh2024/Inventory_Forecasting_main/issues)
 
 </div>
 
@@ -297,8 +297,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 The application runs in demo mode by default, using localStorage for data persistence. This allows you to test all features without setting up Firebase.
 
 ### Demo Credentials
-- **Email**: admin@inventory.com
-- **Password**: admin123
+- **Email**: ragini@gmail.com
+- **Password**: ragini123
 
 ## Setup Instructions
 
@@ -328,26 +328,46 @@ The application runs in demo mode by default, using localStorage for data persis
 ## 📂 Project Structure
 
 ```
-inventory-forecasting/
-├── index.html              # Login page
-├── dashboard.html          # Main dashboard
-├── products.html           # Product management
-├── sales.html             # Sales management
-├── forecast.html          # Demand forecasting
-├── reports.html           # Reports and analytics
-├── styles/
-│   └── main.css           # Main stylesheet
-├── js/
-│   ├── firebase-config.js  # Firebase configuration
-│   ├── auth.js            # Authentication logic
-│   ├── auth-check.js      # Auth state management
-│   ├── dashboard.js       # Dashboard functionality
-│   ├── products.js        # Product management
-│   ├── sales.js           # Sales management
-│   ├── forecasting.js     # Forecasting algorithms
-│   ├── forecast.js        # Forecast page logic
-│   └── reports.js         # Reports functionality
-└── README.md              # This file
+Inventory_Forecasting_main/
+│── frontend/                  # Frontend code (HTML, CSS, JS)
+│   ├── index.html             # Homepage (Dashboard/Login entry)
+│   ├── forecast.html          # Forecasting page
+│   ├── products.html          # Product management page
+│   ├── sales.html             # Sales management page
+│   ├── dashboard.html         # Main dashboard
+│   ├── reports.html           # Reports page
+│   ├── register.html          # User registration page
+│   ├── seed-data.html         # Sample data seeding
+│   ├── clear-data.html        # Clear database option
+│   ├── test-reports.html      # Testing reports page
+│   ├── debug-user.html        # Debugging users
+│   ├── styles/                # CSS files
+│   │   └── main.css
+│   ├── js/                    # JavaScript logic
+│   │   ├── auth.js
+│   │   ├── auth-check.js
+│   │   ├── dashboard.js
+│   │   ├── firebase-config.js
+│   │   ├── forecasting.js
+│   │   ├── forecast.js
+│   │   ├── notifications.js
+│   │   ├── products.js
+│   │   ├── register.js
+│   │   ├── reports.js
+│   │   └── sales.js
+│   └── README.md
+
+│── backend/                   # Firebase backend setup
+│   ├── firebase.json          # Firebase project config
+│   ├── firestore.rules        # Firestore security rules
+│   ├── package.json           # Backend dependencies
+│   └── README.md
+
+│── package.json               # Root project config
+│── package-lock.json          # Dependency lock file
+│── README.md                  # Documentation
+│── .gitignore
+
 ```
 
 ## Forecasting Algorithms
