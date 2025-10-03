@@ -288,7 +288,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **🚀 Ready to optimize your inventory management?**
 
-[Get Started](#-quick-setup-instructions) • [View Demo](https://iridescent-swan-bb267b.netlify.app/index.html) • [Report Bug]  https://github.com/RaginiSingh2024/Inventory_Forecasting_main/issues)
+[Get Started](#-quick-setup-instructions) • [View Demo](https://iridescent-swan-bb267b.netlify.app/index.html) 
 
 </div>
 
