@@ -9,7 +9,7 @@ This documentation explains the structure, functionality, and concepts used in t
 ## 🎯 Project Overview
 
 The application is designed to help businesses manage their **inventory** and **forecast demand**. It supports:
-- Authentication (Admin login)
+- Authentication (Admin login)     
 - Real-time dashboard
 - Product & sales management
 - Demand forecasting (Moving Average)
