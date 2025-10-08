@@ -504,7 +504,7 @@ For issues and questions:
 ---
 ## 🔗 Important Links
 
-- 📄 **Project Documentation (Google Docs)** → [Click Here](https://docs.google.com/document/d/1atWaNv78lgz0vgua7sFgRahmFmg5SqQgGEluYJbuGy8/edit?usp=sharing)
+- 📄 **Business Project Documentation (Google Docs)** → [Click Here](https://docs.google.com/document/d/1atWaNv78lgz0vgua7sFgRahmFmg5SqQgGEluYJbuGy8/edit?usp=sharing)
 - - 🌐 **Live Project (Deployed Site)** → [Click Here](https://inventory-management-c3fbc8.netlify.app)  
 - 💻 **GitHub Repository** → [Click Here](https://github.com/RaginiSingh2024/Inventory_Forecasting_main)
   
