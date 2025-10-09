@@ -319,7 +319,7 @@ The application runs in demo mode by default, using localStorage for data persis
        projectId: "your-project-id",
        storageBucket: "your-project.appspot.com",
        messagingSenderId: "your-sender-id",
-       appId: "your-app-id"
+       appId: "your-app-id" 
    };
    ```
 4. Set `DEMO_MODE = false` in `firebase-config.js`
